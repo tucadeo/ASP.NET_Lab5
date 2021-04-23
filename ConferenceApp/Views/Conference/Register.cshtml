@@ -1,0 +1,177 @@
+﻿@model RegisterConferenceUserViewModel
+
+@{
+    ViewData["Title"] = "Register";
+}
+
+<h1>Register</h1>
+
+<h4>Conference User</h4>
+<hr/>
+
+<div class="row">
+    <div class="col-md-4">
+        <form enctype="multipart/form-data" asp-action="Register" asp-controller="Conference" method="post" asp-antiforgery="true">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="FirstName" class="control-label"></label>
+                <input asp-for="FirstName" class="form-control"/>
+                <span asp-validation-for="FirstName" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="LastName" class="control-label"></label>
+                <input asp-for="LastName" class="form-control"/>
+                <span asp-validation-for="LastName" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Email" class="control-label"></label>
+                <input asp-for="Email" class="form-control"/>
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="ConferenceType" class="control-label"></label>
+                <select class="form-control" asp-for="ConferenceType" asp-items="Model.ConferenceVariants">
+                    <option value="">-- Wybierz --</option>
+                </select>
+                <span asp-validation-for="ConferenceType" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Photo" class="control-label"></label>
+                <div class="custom-file">
+                    <input type="file" multiple asp-for="Photo" class="form-control custom-file-input">
+                    <label class="custom-file-label">Choose file...</label>
+                </div>
+            </div>
+
+            <div asp-validation-summary="All" class="text-danger"></div>
+
+            <dnt-captcha asp-captcha-generator-max="999999"
+                         asp-captcha-generator-min="111111"
+                         asp-captcha-generator-language="English"
+                         asp-captcha-generator-display-mode="ShowDigits"
+                         asp-use-relative-urls="true"
+                         asp-placeholder="Enter Captcha"
+                         asp-validation-error-message="Please enter the security code."
+                         asp-font-name="Tahoma"
+                         asp-font-size="20"
+                         asp-fore-color="#333333"
+                         asp-back-color="#ccc"
+                         asp-text-box-class="text-box form-control"
+                         asp-text-box-template="<span class='input-group-prepend'><span class='form-group-text'></span></span>{0}"
+                         asp-validation-message-class="text-danger"
+                         asp-refresh-button-class="fas fa-redo btn-sm"
+                         asp-use-noise="false"/>
+
+            <div class="form-group mt-3">
+                <input type="submit" value="Create" class="btn btn-primary"/>
+            </div>
+        </form>
+    </div>
+</div>
+
+<h1>Users</h1>
+
+<table class="table">
+    <thead>
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.ConferenceUsers[0].FirstName)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.ConferenceUsers[0].LastName)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.ConferenceUsers[0].Email)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.ConferenceUsers[0].ConferenceType)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.ConferenceUsers[0].PhotoUrl)
+        </th>
+        <th></th>
+    </tr>
+    </thead>
+    <tbody>
+    @if (Model.ConferenceUsers.Any())
+    {
+        @foreach (var item in Model.ConferenceUsers)
+        {
+            var className = "";
+
+            if (TempData["AddedItemId"] != null && (int) TempData["AddedItemId"] == item.Id)
+            {
+                className = "add-element";
+            }
+
+            <tr class="@className">
+                <td>
+                    @Html.DisplayFor(modelItem => item.FirstName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.LastName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Email)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ConferenceType)
+                </td>
+                <td style="width: 20%">
+                    <img class="card-img-top" src="@item.PhotoUrl" alt="" asp-append-version="true">
+                </td>
+            </tr>
+        }
+    }
+    else
+    {
+        <tr class="empty-table">
+            <td colspan="5">
+                <p>No users are registered</p>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+
+    <script>
+        $(document).ready(function() {
+            $('.custom-file-input').on("change",
+                function() {
+                    const fileLabel = $(this).next('.custom-file-label');
+                    const files = $(this)[0].files;
+
+                    if (files.length > 1) {
+                        fileLabel.html(files.length + ' files selected');
+                    } else if (files.length === 1) {
+                        fileLabel.html(files[0].name);
+                    }
+                });
+        });
+    </script>
+
+    <script>
+        $(document).ready(function() {
+            if ('@(TempData["AddedItemId"])') {
+                toastr.success("Registered new user");                     
+            }
+        });
+    </script>
+
+    @* <script> *@
+    @*     $(function () { *@
+    @*         $('form').submit(function() { *@
+    @*             if ($('form').valid()) { *@
+    @*                 toastr.success("Added new user"); *@
+    @*             } *@
+    @*         }); *@
+    @*     }); *@
+    @* </script> *@
+}
