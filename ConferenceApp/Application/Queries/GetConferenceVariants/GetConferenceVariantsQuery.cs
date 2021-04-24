@@ -4,7 +4,5 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace ConferenceApp.Application.Queries.GetConferenceVariants
 {
-    public class GetConferenceVariantsQuery : IRequest<List<SelectListItem>>
-    {
-    }
+    public record GetConferenceVariantsQuery : IRequest<List<SelectListItem>>;
 }

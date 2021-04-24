@@ -4,7 +4,5 @@ using MediatR;
 
 namespace ConferenceApp.Application.Queries.GetConferenceUsers
 {
-    public class GetConferenceUsersQuery : IRequest<List<ConferenceUserViewModel>>
-    {
-    }
+    public record GetConferenceUsersQuery : IRequest<List<ConferenceUserViewModel>>;
 }
