@@ -22,9 +22,9 @@ namespace ConferenceApp
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddPersistence(_config);
-            
+
             services.AddMediatR(Assembly.GetExecutingAssembly());
-            
+
             services.AddDNTCaptcha(options =>
                 options.UseCookieStorageProvider().ShowThousandsSeparators(false));
 
@@ -43,17 +43,9 @@ namespace ConferenceApp
             }
 
             app.UseStaticFiles();
-
             app.UseRouting();
 
-            app.UseAuthorization();
-
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllerRoute(
-                    name: "default",
-                    pattern: "{controller=Home}/{action=Index}/{id?}");
-            });
+            app.UseEndpoints(endpoints => { endpoints.MapDefaultControllerRoute(); });
         }
     }
 }

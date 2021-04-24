@@ -1,9 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 using ConferenceApp.Models;
 using ConferenceApp.Persistence;
+using ConferenceApp.Persistence.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -24,16 +27,19 @@ namespace ConferenceApp.Application.Queries.GetConferenceUsers
         {
             return await _context.Users
                 .Include(x => x.ConferenceVariant)
-                .Select(x => new ConferenceUserViewModel
-                {
-                    Id = x.Id,
-                    ConferenceType = x.ConferenceVariant.ConferenceType.ToString(),
-                    FirstName = x.FirstName,
-                    LastName = x.LastName,
-                    Email = x.Email,
-                    PhotoUrl = x.PhotoUrl,
-                })
+                .Select(Projection)
                 .ToListAsync(cancellationToken);
         }
+
+        private static readonly Expression<Func<User, ConferenceUserViewModel>> Projection =
+            user => new ConferenceUserViewModel
+            {
+                Id = user.Id,
+                ConferenceType = user.ConferenceVariant.ConferenceType.ToString(),
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Email = user.Email,
+                PhotoUrl = user.PhotoUrl,
+            };
     }
 }
