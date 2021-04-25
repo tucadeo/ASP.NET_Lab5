@@ -22,24 +22,22 @@ namespace ConferenceApp.Application.Commands.RegisterUser
 
         public async Task<int> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
         {
-            string? uniqueFileName = null;
+            string? photoUrl = null;
 
-            var hasPhoto = request.Photo is not null;
-
-            if (hasPhoto)
+            if (request.Photo is not null)
             {
                 string uploadsFolder = Path.Combine(_env.ContentRootPath, "wwwroot/images");
-                uniqueFileName = $"{Guid.NewGuid()}_{request.Photo!.FileName}";
+                string uniqueFileName = $"{Guid.NewGuid()}_{request.Photo.FileName}";
                 string filePath = Path.Combine(uploadsFolder, uniqueFileName);
 
                 await using var fileStream = new FileStream(filePath, FileMode.Create);
                 await request.Photo.CopyToAsync(fileStream, cancellationToken);
+
+                photoUrl = $"~/images/{uniqueFileName}";
             }
 
-            var photoUrl = hasPhoto ? $"~/images/{uniqueFileName}" : null;
-
             var user = request.ToEntity(photoUrl);
-  
+
             _context.Users.Add(user);
 
             var success = await _context.SaveChangesAsync(cancellationToken) > 0;
